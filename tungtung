@@ -1,0 +1,40 @@
+
+name: Build Sahur Client
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'Sahur-Client-Source.zip'
+      - '.github/workflows/build.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download source
+        uses: actions/checkout@v4
+
+      - name: Install Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Install Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14.3'
+
+      - name: Extract mod
+        run: unzip -q Sahur-Client-Source.zip
+
+      - name: Build JAR
+        run: gradle -p sahur-client build --no-daemon
+
+      - name: Upload JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: Sahur-Client-JAR
+          path: sahur-client/build/libs/*.jar
